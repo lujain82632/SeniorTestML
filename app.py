@@ -19,6 +19,7 @@ loaded_model.load_weights("Emotion_Voice_Detection_Model14TH.h5")
 
 # Load text model
 aspect_extractor = ATEPCCheckpointManager.get_aspect_extractor(checkpoint='english')
+
 @app.route('/home')
 def home():
     return "hello!!!!! <3"
@@ -44,46 +45,47 @@ def predict():
     # return render_template('text.html', prediction = atepc_result_df)
     return "text page here :)"
 
-# @app.route("/audio", methods=['GET', 'POST'])
-# def predict():
-#     if request.method == 'POST':
-#         try:
-#             X, sample_rate = librosa.load('audiorec4.wav', res_type='kaiser_fast',duration=2.5,sr=22050*2,offset=0.5)
-#             sample_rate = np.array(sample_rate)
-#             mfccs = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=13),axis=0)
-#             featurelive = mfccs
-#             livedf2 = featurelive
+@app.route("/audio", methods=['GET', 'POST'])
+def predict():
+    if request.method == 'POST':
+        try:
+            X, sample_rate = librosa.load('audiorec4.wav', res_type='kaiser_fast',duration=2.5,sr=22050*2,offset=0.5)
+            sample_rate = np.array(sample_rate)
+            mfccs = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=13),axis=0)
+            featurelive = mfccs
+            livedf2 = featurelive
   
-#             livedf2= pd.DataFrame(data=livedf2)
-#             livedf2 = livedf2.stack().to_frame().T
-#             twodim= np.expand_dims(livedf2, axis=2)
+            livedf2= pd.DataFrame(data=livedf2)
+            livedf2 = livedf2.stack().to_frame().T
+            twodim= np.expand_dims(livedf2, axis=2)
 
-#             livepreds = loaded_model.predict(twodim, 
-#                                     batch_size=32, 
-#                                     verbose=1)
+            livepreds = loaded_model.predict(twodim, 
+                                    batch_size=32, 
+                                    verbose=1)
 
-#             livepreds1=livepreds.argmax(axis=1)
+            livepreds1=livepreds.argmax(axis=1)
 
-#             liveabc = livepreds1.astype(int).flatten()       
+            liveabc = livepreds1.astype(int).flatten()       
 
-#             if liveabc[0] == 0:
-#                 predicted_voice= "female_happy"
-#             elif liveabc[0] == 1:
-#                 predicted_voice="female_neutral"
-#             elif liveabc[0] == 2:
-#                 predicted_voice="female_sad"
-#             elif liveabc[0] == 3:
-#                 predicted_voice="male_happy"
-#             elif liveabc[0] == 4:
-#                 predicted_voice="male_neutral"
-#             elif liveabc[0] == 5:
-#                 predicted_voice="male_sad "
+            if liveabc[0] == 0:
+                predicted_voice= "female_happy"
+            elif liveabc[0] == 1:
+                predicted_voice="female_neutral"
+            elif liveabc[0] == 2:
+                predicted_voice="female_sad"
+            elif liveabc[0] == 3:
+                predicted_voice="male_happy"
+            elif liveabc[0] == 4:
+                predicted_voice="male_neutral"
+            elif liveabc[0] == 5:
+                predicted_voice="male_sad "
 
     
-#         except valueError:
-#             return "Please check if values are entered correctly!!!!!!!! :("
+        except valueError:
+            return "Please check if values are entered correctly!!!!!!!! :("
 
-#     return render_template('audio.html', prediction = predicted_voice)
-
+    # return render_template('audio.html', prediction = predicted_voice)
+    return "audio page"
+    
 if __name__ == "__main__":
     app.run()
